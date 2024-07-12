@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Instalação do Git
+      ansible.builtin.apt:
+        name: git
+        state: present
+
