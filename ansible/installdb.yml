@@ -41,3 +41,17 @@
         priv: 'backup.*:ALL'
         state: present
         column_case_sensitive: false
+    - name: 'Substituir bind do mysql'
+      replace:
+        path: /etc/mysql/mariadb.conf.d/50-server.cnf
+        regexp: '127\.0\.0\.1'
+        replace: '0.0.0.0'
+      notify: Restart Mariadb
+
+  handlers:
+    - name: Restart Mariadb
+      service:
+        name: mariadb
+        state: restarted
+        enabled: yes
+

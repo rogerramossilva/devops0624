@@ -1,0 +1,76 @@
+---
+- hosts: web
+  become: yes
+  vars_files:
+    - vars/default.yml
+  gather_facts: true
+  tasks:
+    - name: 'Instalação de pacotes webserver'
+      become: yes
+      apt:
+        pkg:
+          - php7.4
+          - php-pear
+          - php7.4-curl
+          - php7.4-gd
+          - php7.4-intl
+          - php7.4-xmlrpc
+          - php7.4-mysql
+          - apache2
+          - python3-mysqldb
+          - wget
+          - zip
+          - curl
+          - vim
+        state: present
+      when: ansible_os_family == 'Debian'
+    - name: 'Diretorio do webserver'
+      file:
+        path: /srv/www
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: '0775'
+    - name: 'Download e Extração do arquivo da aplicação'
+      unarchive:
+        src: https://github.com/rogerramossilva/devops/raw/master/express.zip
+        dest: /srv/www
+        remote_src: yes
+    - name: 'Substitui IP de Conexão com o Banco'
+      replace:
+        path: /srv/www/express/backup.php
+        regexp: '192\.168\.1\.20'
+        replace: '172.17.177.102'
+    - name: 'Criando virtual host para pagina express.asf.com'
+      template:
+        src: "files/express.conf.j2"
+        dest: "/etc/apache2/sites-available/{{ http_conf }}"
+    - name: 'Controle de Diretório Virtual HOst'
+      template:
+        src: "files/direxpress.conf.j2"
+        dest: "/etc/apache2/conf-available/direxpress.conf"
+    - name: 'Entrada DNS arquivo /etc/hosts'
+      template:
+        src: "files/hostsweb.conf.j2"
+        dest: "/etc/hosts"
+    - name: 'Habilitar Site'
+      shell: /usr/sbin/a2ensite {{ http_conf }}
+      notify: Reload Apache
+    - name: 'Habilitar Arquivo de configuração express'
+      shell: /usr/sbin/a2enconf direxpress.conf
+      notify: Reload Apache
+    - name: 'Habilitar Modulo php7'
+      apache2_module:
+        state: present
+        name: php7.4
+      notify: Restart Apache
+
+  handlers:
+    - name: Reload Apache
+      service:
+        name: apache2
+        state: reloaded
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
