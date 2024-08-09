@@ -16,6 +16,11 @@ Vagrant.configure("2") do |config|
 			ansible.playbook = "playbook.yml"
 			ansible.install_mode = "pip"
 		end
+		controle.vm.provision "ansible_local" do |ansible|
+                        ansible.playbook = "installdocker.yml"
+                        ansible.install_mode = "pip"
+                end
+
 	end
  	config.vm.define "web" do |web|
                 web.vm.box = "shekeriev/debian-11"

@@ -1,0 +1,14 @@
+[Unit]
+Description=The Apache HTTP Server
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/apachectl start
+ExecReload=/usr/sbin/apachectl graceful
+ExecStop=/usr/sbin/apachectl stop
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
