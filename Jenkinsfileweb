@@ -7,7 +7,7 @@ pipeline {
                 ansiblePlaybook(
                     inventory:'ansible/hosts',
                     playbook:'ansible/installweb.yml',
-		    credentialsId: 'ssh-passkey'
+		    credentialsId: 'ssh-passkey',
 		    extraVars: [
         "ansible_ssh_extra_args='-o StrictHostKeyChecking=no'"
     ]
