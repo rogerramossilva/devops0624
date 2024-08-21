@@ -9,7 +9,7 @@ pipeline {
                     inventory: 'ansible/hosts',
                     credentialsId: 'ssh-passkey',
                     extraVars: [
-                        ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'
+                        ansible_ssh_extra_args: '-o StrictHostKeyChecking=no -vvv'
                     ]
                 )
             }
