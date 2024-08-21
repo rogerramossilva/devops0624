@@ -1,22 +1,19 @@
 pipeline {
     agent any
     
-    environment {
-        ANSIBLE_PRIVATE_KEY = credentials('ssh-passkey')
-    }
-    
     stages {
         stage('Executar playbook Ansible') {
             steps {
-                ansiblePlaybook(                
+                ansiblePlaybook(
                     playbook: 'ansible/installweb.yml',
                     inventory: 'ansible/hosts',
                     credentialsId: 'ssh-passkey',
                     extraVars: [
-                        ansible_ssh_extra_args: '-o StrictHostKeyChecking=no -i ${ANSIBLE_PRIVATE_KEY}'
+                        ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'
                     ]
                 )
             }
         }
     }
 }
+
