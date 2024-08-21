@@ -4,12 +4,14 @@ pipeline {
     stages {
         stage('Executar playbook Ansible') {
             steps {
-    		playbook: 'ansible/installweb.yml',
+		ansiblePlaybook(    		
+		playbook: 'ansible/installweb.yml',
     		inventory: 'ansible/hosts',
     		credentialsId: 'ssh-passkey',
     		extraVars: [
         		ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'
     		]
+		)
             }
         }
     }
