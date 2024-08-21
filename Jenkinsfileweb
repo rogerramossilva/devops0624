@@ -1,22 +1,19 @@
 pipeline {
     agent any
 	
-
-    environment {
-	SSH_PASSKEY = credentials('ssh_passkey')
-    }
-
     stages {
         stage('Executar playbook Ansible') {
             steps {
+		withCredentials([string(credentialsId: 'ssh_passkey', variable: 'SSH_PASSKEY')]) {
                 ansiblePlaybook(
                     inventory:'ansible/hosts',
                     playbook:'ansible/installweb.yml',
 			extraVars: [
-				ssh_passphrase: "${SSH_PASSKEY}"
+				ssh_passphrase: "${env.SSH_PASSKEY}"
 			]
                 )
             }
         }
     }
+}
 }
