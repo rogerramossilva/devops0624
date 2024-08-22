@@ -1,13 +1,20 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('Executar playbook Ansible') {
             steps {
-                ansiblePlaybook(
-                    playbook: 'ansible/installweb.yml',
-                    inventory: 'ansible/hosts',
-                )
+                withCredentials([
+                    string(credentialsId: 'ssh_passphrase', variable: 'ANSIBLE_PASSPHRASE')
+                ]) {
+                    ansiblePlaybook(
+                        playbook: 'ansible/installweb.yml',
+                        inventory: 'ansible/hosts',
+                        extraVars: [
+                            passphrase: "${ANSIBLE_PASSPHRASE}"
+                        ]
+                    )
+                }
             }
         }
     }
