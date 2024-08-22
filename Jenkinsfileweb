@@ -7,13 +7,11 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'ssh_passphrase', variable: 'ANSIBLE_PASSPHRASE')
                 ]) {
-                    ansiblePlaybook(
-                        playbook: 'ansible/installweb.yml',
-                        inventory: 'ansible/hosts',
-                        extraVars: [
-                            passphrase: "${ANSIBLE_PASSPHRASE}"
-                        ]
-                    )
+                    sh '''
+                        eval $(ssh-agent -s)
+                        echo "$ANSIBLE_PASSPHRASE" | ssh-add /var/ssh/key/ansible
+                        ansible-playbook -i ansible/hosts ansible/installweb.yml
+                    '''
                 }
             }
         }
